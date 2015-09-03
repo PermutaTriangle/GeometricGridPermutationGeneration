@@ -1,4 +1,3 @@
-# from __future__ import print_function
 import sys
 sys.setrecursionlimit(99999999)
 
@@ -14,7 +13,7 @@ n = len(grid)
 m = len(grid[0])
 k = 7
 
-# EPS = 1e-9
+
 # EPS = 1e-9
 EPS = 0.001 # k*EPS < 1
 
@@ -55,11 +54,11 @@ class BinarySearchTree:
             else:
                 self.attach_right(id, right_node.left)
 
-        trav = self.inorder_traversal()
-        if right_id is None:
-            assert trav[-1] == id
-        else:
-            assert trav.index(id) + 1 == trav.index(right_id)
+        # trav = self.inorder_traversal()
+        # if right_id is None:
+        #     assert trav[-1] == id
+        # else:
+        #     assert trav.index(id) + 1 == trav.index(right_id)
 
     def insert_after(self, id, left_id):
         assert left_id is None or left_id in self.node
@@ -75,11 +74,11 @@ class BinarySearchTree:
             else:
                 self.attach_left(id, left_node.right)
 
-        trav = self.inorder_traversal()
-        if left_id is None:
-            assert trav[0] == id
-        else:
-            assert trav.index(id) - 1 == trav.index(left_id)
+        # trav = self.inorder_traversal()
+        # if left_id is None:
+        #     assert trav[0] == id
+        # else:
+        #     assert trav.index(id) - 1 == trav.index(left_id)
 
     def remove(self, id):
         node = self.node[id]
@@ -184,6 +183,7 @@ def is_valid(rows, cols):
         p.add_constraint(f(var[a]) - EPS >= g(var[b]))
 
     try:
+        # TODO: don't solve linear program, just check feasibility
         p.solve()
         return True
     except:
@@ -229,7 +229,6 @@ def bt(k,x,y, id):
 
         if k > 0:
             # put one more here
-            # print('another in ', x,y, i,j, hlines, vlines)
             if grid[x][y] == -1:
                 rows[x].insert_before(id, hlines[i] if i < len(hlines) else None)
             else:
