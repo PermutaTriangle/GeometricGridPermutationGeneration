@@ -2,16 +2,21 @@ import sys
 sys.setrecursionlimit(99999999)
 
 # All grids
-# n = 2
-# m = 2
-# k = 7
-# grid = [ [ None for j in range(m) ] for i in range(n) ]
+n = 2
+m = 2
+k = 4
+grid = [ [ None for j in range(m) ] for i in range(n) ]
+
+output = '%dx%d_%d.txt' % (n,m,k)
+
+# 2x3 up to length 8
+# 3x3 up to length 8
 
 # A specific grid
-grid = [[1,-1],[1,-1]]
-n = len(grid)
-m = len(grid[0])
-k = 7
+# grid = [[1,-1,1],[1,-1,-1],[1,-1,-1]]
+# n = len(grid)
+# m = len(grid[0])
+# k = 10
 
 
 # EPS = 1e-9
@@ -130,9 +135,11 @@ def is_valid(rows, cols):
     n = len(rows)
     m = len(cols)
     l = sum( len(c) for c in cols )
+    if l == 0:
+        return True
 
     colorder = []
-    for i in range(n):
+    for i in range(m):
         for j in range(len(cols[i])):
             colorder.append(cols[i][j])
 
@@ -192,7 +199,6 @@ def is_valid(rows, cols):
 rows = [ BinarySearchTree() for i in range(n) ]
 cols = [ BinarySearchTree() for i in range(m) ]
 res = {}
-extra = {}
 
 def bt(k,x,y, id):
     if y == m:
@@ -212,11 +218,12 @@ def bt(k,x,y, id):
         gridt = tuple([ tuple(row) for row in grid ])
         perm = construct_permutation(roworders, colorders)
         res.setdefault(gridt,set())
-        extra.setdefault(gridt,set())
-        if is_valid(roworders, colorders):
+        # if not perm:
+        #     print('empty', perm not in res[gridt], is_valid(roworders, colorders))
+        #     print(roworders)
+        #     print(colorders)
+        if perm not in res[gridt] and is_valid(roworders, colorders):
             res[gridt].add(perm)
-        else:
-            extra[gridt].add(perm)
         return
 
     hlines = rows[x].inorder_traversal()
@@ -264,6 +271,9 @@ def bt(k,x,y, id):
     for t in range(lo,hi+1):
         grid[x][y] = t
 
+        # if x == 0 and y <= 1:
+        #     print(x,y,t,k)
+
         if t == 1:
             # increasing at (x,y)
             bt2(k, horizontal, 0, id, False)
@@ -277,18 +287,32 @@ def bt(k,x,y, id):
     if lo < hi:
         grid[x][y] = None
 
-bt(k, 0, 0, 0)
+def main():
+    global k
+    bt(k, 0, 0, 0)
 
-for gridt in res:
-    print('GRID', gridt)
-    cnt = {}
-    for perm in sorted(res[gridt], key=lambda p: (len(p), p)):
-        cnt.setdefault(len(perm), 0)
-        cnt[len(perm)] += 1
-    for k,v in sorted(cnt.items()):
-        print(k,v)
-    for perm in sorted(extra[gridt], key=lambda p: (len(p), p)):
-        if perm in res[gridt]: continue
-        if len(perm) == 5:
-            print('Extra', perm)
+    with open(output, 'w') as f:
+    # with sys.stdout as f:
+        for gridt in sorted(res.keys()):
+            f.write('[%s]' % ','.join( '[%s]' % ','.join(map(str,row)) for row in gridt ))
+            # print('GRID', gridt)
+            cnt = {}
+            for perm in sorted(res[gridt], key=lambda p: (len(p), p)):
+                f.write(':')
+                f.write(','.join( str(x) for x in perm ))
 
+            f.write('\n')
+                # cnt.setdefault(len(perm), 0)
+                # cnt[len(perm)] += 1
+            # for k,v in sorted(cnt.items()):
+            #     print(k,v)
+            # for perm, cnt in sorted(extra[gridt].items(), key=lambda p: (len(p[0]), p[0])):
+            #     if perm in res[gridt]: continue
+            #     print(perm, cnt)
+            #     # if len(perm) == 5:
+            #         # print('Extra', perm)
+            #
+
+main()
+# import cProfile
+# cProfile.run('main()')
